@@ -38,4 +38,6 @@
        - ```unzip``` - утилита для распакаови .zip
 7. Скачевам СУБД PhpMyAdmin используя команду ```wget https://files.phpmyadmin.net/phpMyAdmin/5.2.2/phpMyAdmin-5.2.2-all-languages.zip```
 8. Скачиваем wordpress ```wget https://wordpress.org/latest.zip```
-9. 
+
+
+## ←To be continued.

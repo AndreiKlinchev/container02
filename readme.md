@@ -6,11 +6,11 @@
 - Группа: IA2403
 - 18.02.2026
 
-## Задание
+## Подготовка сервера
 
-1. Необходимо было установить на своё устройство вирутальную машину (гипервизор) *QUEMU* а также скачать [debian](https://www.debian.org/distrib/netinst) (для установки была выбранна версия "Маленькие диски или USB-накопители" под процессор **amd64**).
-2. В консоле в корневой папке "container02" был создан образ диска для виртульной манины, размером 8GB и в формате qcow2 ```qemu-img create -f qcow2 debian.qcow2 8G ```
-3. После создания образа устанвливаем его задав 2GB оперативной памяти для установки 
+1. Установка виртуальной машины и скачаивание образа системы. Необходимо было установить на своё устройство вирутальную машину (гипервизор) *QUEMU* а также скачать [debian](https://www.debian.org/distrib/netinst) (для установки была выбранна версия "Маленькие диски или USB-накопители" под процессор **amd64**).
+2. В консоле в корневой папке "container02" был создан образ диска для виртульной манины, размером 8GB и в формате qcow2 ```qemu-img create -f qcow2 debian.qcow2 8G```
+3. После создания образа устанвливаем его задав 2GB оперативной памяти для установки
    ```qemu-system-x86_64 -hda debian.qcow2 -cdrom dvd/debian.iso -boot d -m 2G```
 4. Устанавливаем debian с параметрами
    1. Имя компьютера: debian;
@@ -38,6 +38,60 @@
        - ```unzip``` - утилита для распакаови .zip
 7. Скачевам СУБД PhpMyAdmin используя команду ```wget https://files.phpmyadmin.net/phpMyAdmin/5.2.2/phpMyAdmin-5.2.2-all-languages.zip```
 8. Скачиваем wordpress ```wget https://wordpress.org/latest.zip```
+   >Команда ```wget``` позволяет скачать данные по протаколу http. В данном случае происходит скачивание архивов
+9. Проверяем наличие скаченных архивов используя команду ```ls -l```![alt text](images/photo_2026-02-18_21-12-41.jpg)
+10. Распаковываем скаченные архивы
+    1. ```mkdir var/www``` создаём папку ```www``` в каталоге ```var```
+    2. Распаковываем архив с *phpMyAdmin* ```unzip phpMyAdmin-5.2.2-all-languages.zip```
+    3. Архив распоковался в корневой деррикторий, его необходимо переместить в ```mkdir var/www/phpmyadmin```, для этого используем команду ```mv phpMyAdmin-5.2.2-all-languages /var/www/phpmyadmin```
+    4. Пункты 2-3 повторяем и для файла ```latest.zip```, в котором располагается wordpress. В качестве финального каталога будет папка ```var/www/wordpress```
+    > P.S. также можно было разархивировать файлы сразу в нужные папки ```unzip phpMyAdmin-5.2.2-all-languages -d /var/www/phpmyadmin```
+11. Создаём новую базу данных
+    1. Пытаемся подключиться к SQL серверу под пользователем **root** ```mysql -u root```
+    2. Создаём базу данных под названием ```wordpress_db``` ```CREATE DATABASE wordpress_db;```
+    3. затем пользователя ```CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';```
+    4. Даём нашему пользователю всю власть наб базой данных ```GRANT ALL PRIVILEGES ON wordpress_db.* TO 'user'@'localhost'```
+    5. Обновляем таблицу парав пользователей дабы сообщить о новом владыке нашей базе данных ```FLUSH PRIVILEGES;```
+    6. Выходим из базы данных ```EXIT;```
+12. Настраиваем конфигурацию для phpmyadmin
+    1. Создаём файл в каталоге при помощи ```nano /etc/apache2/sites-available/01-phpmyadmin.conf```. ```nano``` - тектовый редактор для создания/редактирования файлов
+    2. Невнимательно вписываем параметры для виртуального соедеинения, а потом несколько раз переписываем при помощи того же редактора ```nano``` .
 
+    ```php
+    <VirtualHost *:80>
+      ServerAdmin webmaster@localhost
+      DocumentRoot "/var/www/phpmyadmin"
+      ServerName phpmyadmin.localhost
+      ServerAlias www.phpmyadmin.localhost
+      ErrorLog "/var/log/apache2/phpmyadmin.localhost-error.log"
+      CustomLog "/var/log/apache2/phpmyadmin.localhost-access.log" common
+    </VirtualHost>
+    ```
 
-## ←To be continued.
+13. Настраиваем конфигурацию для wordpress
+    1. Создаём файл конфигурации в том же каталоге что и для ```phpmyadmin```:  ```nano /etc/apache2/sites-available/02-wordpress.conf```
+    2. Всё также невнимательно вписываем параметры и несколько раз переписываем
+
+      ```php
+      <VirtualHost *:80>
+         ServerAdmin webmaster@localhost
+         DocumentRoot "/var/www/wordpress"
+         ServerName wordpress.localhost
+         ServerAlias www.wordpress.localhost
+         ErrorLog "/var/log/apache2/wordpress.localhost-error.log"
+         CustomLog "/var/log/apache2/wordpress.localhost-access.log" common
+      </VirtualHost>
+      ```
+
+14. Регестрируем конфигурации исполняя команды
+    1.  Регистрируем phpmyadmin ```/usr/sbin/a2ensite 01-phpmyadmin```
+    2.  Регистрируем wordpress ```/usr/sbin/a2ensite 02-wordpress```
+15. Добавляем в таблицу сответсвия доманных имён строки
+    - ```127.0.0.1 phpmyadmin.localhost```
+    - ```127.0.0.1 wordpress.localhost```
+
+## Тестирование сервера
+
+### Work in progress →
+
+## ←To be continued

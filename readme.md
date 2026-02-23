@@ -160,7 +160,6 @@
 
 ### Библиография
 
-- https://elearning.usm.md/mod/assign/view.php?id=281960
-- https://habr.com/ru/articles/120415/
-- https://habr.com/ru/sandbox/244526/
-
+- [Пошаговая инструкцияя лабораторной](https://elearning.usm.md/mod/assign/view.php?id=281960)
+- [Статья про разбиение дисков для серверов](https://habr.com/ru/articles/120415/)
+- [Установка и работа с ипервиизаром quemu](https://habr.com/ru/sandbox/244526/)
